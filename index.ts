@@ -1,8 +1,7 @@
 import { Curseforge } from "node-curseforge";
 
 import fs, { PathLike } from "fs";
-import { exit, stdin, stdout } from "process";
-import { getDiffieHellman } from "crypto";
+import { exit } from "process";
 
 
 const TKN_FILE = ".cf_token"
@@ -53,23 +52,19 @@ async function main() {
         console.log(CFG_FILE + " not found.")
         exit(1)
     }
+
     let cfg = JSON.parse(fs.readFileSync(CFG_FILE).toString())
-
-
-    let dir = DL_DIR
-    if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir);
-    }
-
-
     let files = cfg.files
 
+    if (!fs.existsSync(DL_DIR)) {
+        fs.mkdirSync(DL_DIR);
+    }
 
     let downloads = async () => {
         let promises = new Array<Promise<boolean>>()
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
-            promises.push(getFile(cf, file, dir))
+            promises.push(getFile(cf, file, DL_DIR))
             if (promises.length >= CONC_DL) {
                 await Promise.all(promises)
             }
