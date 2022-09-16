@@ -11,7 +11,9 @@
 - build and run the project (`npm run start`)
 
 #### Why life-fiber?
-- wanted to try out node
-- wanted to try out typescript
-- there was a library i wanted to use
-> **go near at your own risk!**
+- I wanted to try out:
+    - node
+    - typescript
+    - a specific library
+- I didn't want to try out:
+    - the curseforge app
