@@ -66,7 +66,7 @@ async function main() {
             const file = files[i];
             promises.push(getFile(cf, file, DL_DIR))
             if (promises.length >= CONC_DL) {
-                await Promise.all(promises)
+                await Promise.race(promises)
             }
         }
     }
