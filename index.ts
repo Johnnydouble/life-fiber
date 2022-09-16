@@ -37,7 +37,7 @@ async function getFile(cf: Curseforge, file: any, dir: String) {
     let path: PathLike = dir + "/" + modFile.fileName
     let good = await modFile.download(path, true)
     if (!good) {
-        console.warn(lfWarn("file " + modFile.fileName + " failed its che6cksum. " + lfFinfo(file)))
+        console.warn(lfWarn("file " + modFile.fileName + " failed its checksum. " + lfFinfo(file)))
         return false
     }
     console.log(lfPrefix(modFile.fileName + " downloaded!"))
