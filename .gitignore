@@ -1,10 +1,10 @@
+manifest.json
+config.json
 .cf_token
 thumb.png
+downloads/
 
 package-lock.json
-manifest.json
-
 node_modules/
 dist/
 dist/
-downloads/
