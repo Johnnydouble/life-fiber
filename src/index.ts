@@ -9,44 +9,6 @@ import { Patches, Diff } from "./patches"
 import { FileData, LFConfig } from "./types";
 import { DownloadManager } from "./downloadmgr";
 
-async function getFile(cf: Curseforge, file: any, dir: String) {
-    let modFile: ModFile
-    try {
-        modFile = await cf.get_file(file.projectID, file.fileID)
-    } catch (error) {
-        console.warn(lfWarn("file failed to download (resource not found) " + JSON.stringify(file)))
-        return false
-    }
-    if (modFile == null) {
-        console.warn(lfWarn("file failed to download" + JSON.stringify(file)))
-        return false
-    }
-
-    if (modFile.downloadUrl == null) {
-        console.warn(lfWarn("file failed to download (downloadUrl was null) " + JSON.stringify(file)))
-        return false
-    }
-
-    let path: PathLike = dir + "/" + modFile.fileName
-    let good = await modFile.download(path, true)
-    if (!good) {
-        console.warn(lfWarn("file " + modFile.fileName + " failed its checksum. " + JSON.stringify(file)))
-        return false
-    }
-
-    const pad = (str: string) => {
-        for (let i = 60; i > str.length;) {
-            str += " "
-        }
-        return str
-    }
-
-
-    console.log(lfPrefix(pad(modFile.fileName + " downloaded!") + "\t" + JSON.stringify(file)))
-    return true
-}
-
-
 async function main() {
     let cf_token = fs.readFileSync(TKN_FILE).toString()
     let cf: Curseforge = new Curseforge(cf_token);
@@ -64,7 +26,7 @@ async function main() {
         patches = Patches.fromJSONStringCommented(fs.readFileSync(CFG_FILE).toString())
     }
 
-    const dlmgr = new DownloadManager(config, cf)
+    const dlmgr = new DownloadManager(config, cf, await mc)
     dlmgr.processPatches(patches)
 
     if (!fs.existsSync(DL_DIR)) {

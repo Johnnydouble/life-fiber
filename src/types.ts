@@ -16,7 +16,7 @@ class FileData {
     }
 }
 
-type FileMap = Map<string, FileData>
+type FileMap = Map<number, FileData>
 
 class LFConfig {
     files: FileMap;
@@ -25,7 +25,7 @@ class LFConfig {
     gameVersion: string;
     
     private static toFileMap(files: any) : FileMap { 
-        return new Map(files.map((file: any) => [file.projectID.toString(), {fileID: file.fileID, projectID: file.projectID, required: file.required} as FileData]));
+        return new Map(files.map((file: any) => [file.projectID, {fileID: file.fileID, projectID: file.projectID, required: file.required} as FileData]));
     }
 
     constructor(files: FileMap, gameVersion: string, modLoader: string, packName: string) {
@@ -82,6 +82,16 @@ class ObjectSet<T> {
     delete(value: T) : boolean {
         return this.map.delete(JSON.stringify(value))
     }
+
+    values() : IterableIterator<T> {
+        return this.map.values()
+    }
+    
+    [Symbol.iterator]() {
+        return this.values()
+    }
+
+    
 }
 
 interface NumberCrushable {
