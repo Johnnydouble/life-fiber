@@ -2,14 +2,12 @@ import { Curseforge, ModFile } from "node-curseforge";
 
 import fs, { PathLike } from "fs";
 import { exit } from "process";
-import * as readline from 'node:readline';
-import process from 'node:process';
 
-import { TKN_FILE , MFT_FILE, DL_DIR, CONC_DL } from "./global"
-import { lfPrefix, lfWarn, lfFinfo } from "./global"
-import { applyPatches } from "./patches"
-import { FileData } from "./types";
-import { json } from "stream/consumers";
+import { TKN_FILE , MFT_FILE, CFG_FILE, DL_DIR } from "./global"
+import { lfPrefix, lfWarn} from "./global"
+import { Patches, Diff } from "./patches"
+import { FileData, LFConfig } from "./types";
+import { DownloadManager } from "./downloadmgr";
 
 async function getFile(cf: Curseforge, file: any, dir: String) {
     let modFile: ModFile
@@ -48,42 +46,38 @@ async function getFile(cf: Curseforge, file: any, dir: String) {
     return true
 }
 
+
 async function main() {
     let cf_token = fs.readFileSync(TKN_FILE).toString()
     let cf: Curseforge = new Curseforge(cf_token);
+    let mc = cf.get_game('minecraft')
 
     if (!fs.existsSync(MFT_FILE)) {
         console.log(MFT_FILE + " not found.")
         exit(1)
     }
 
-    let {files} = JSON.parse(fs.readFileSync(MFT_FILE).toString())
+    const config = LFConfig.fromJSONString(fs.readFileSync(MFT_FILE).toString())
 
-    let patchedFiles: Map<string, FileData> = await applyPatches(files, cf)
+    let patches: Patches = null;
+    if (!fs.existsSync(CFG_FILE)) {
+        patches = Patches.fromJSONStringCommented(fs.readFileSync(CFG_FILE).toString())
+    }
 
-    // const rl = readline.createInterface({ input:process.stdin, output:process.stdout });
-    // const ask = (question: string) => new Promise(r => rl.question(question, r));
-    // let answer = await ask('Continue? [okay:Enter] ');
-    // if(answer !== "") {
-    //     exit(0)
-    // }
-    console.log(lfPrefix("--------------------> [ Downloading Files ] <--------------------"))
+    const dlmgr = new DownloadManager(config, cf)
+    dlmgr.processPatches(patches)
 
     if (!fs.existsSync(DL_DIR)) {
         fs.mkdirSync(DL_DIR);
     }
 
-    let promises = new Array<Promise<boolean>>()
-    let running = 0
-    for (const file of patchedFiles.values()) {
-        promises.push(getFile(cf, file, DL_DIR))
-        running++
-        if (running >= CONC_DL) {
-            await Promise.race(promises)
-            running--
-        }
+    const dlPathFull = DL_DIR + "/" + config.packName
+
+    if (!fs.existsSync(dlPathFull)) {
+        fs.mkdirSync(dlPathFull);
     }
 
+    dlmgr.downloadMods(dlPathFull)
 }
 
 main()

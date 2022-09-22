@@ -16,5 +16,5 @@ function lfWarn(lfWarning: String) {
 }
 
 function lfFinfo(cfFileData: any) {
-    return "{projectID:" + cfFileData.projectID + ", fileID:" + cfFileData.fileID + ", required:" + cfFileData.required + "}"
+    return "\"{projectID:\"" + cfFileData.projectID + ", \"fileID\":" + cfFileData.fileID + ", required:" + cfFileData.required + "}"
 }
