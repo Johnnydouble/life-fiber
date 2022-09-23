@@ -20,6 +20,9 @@ class DownloadManager {
         this.config = cfg
         this.modAPI = gameApi
         this.gameAPI = game
+
+        
+        this.modFiles = new Array<ModFile>
     }
 
     private getMods(fileDatae: Iterable<FileData>, addFunc: Function) : Promise<Mod>[] {
@@ -35,7 +38,9 @@ class DownloadManager {
         return promises
     }
 
-    private getMyMods() {
+    private setMyMods() {
+        this.modsByName = new Map<string, Mod>
+        this.modsByID = new Map<number, Mod>
         const promises = this.getMods(this.config.files.values(), (mod: Mod) => {
             this.modsByID.set(mod.id, mod)
             this.modsByName.set(mod.name, mod)
@@ -90,7 +95,7 @@ class DownloadManager {
 
         let promises: Promise<Mod>[]
         if(this.modsByID == undefined || this.modsByName == undefined) {
-            promises = this.getMyMods()
+            promises = this.setMyMods()
         }
 
         const [, mods2Add, mods2Rem] = await Promise.all([promises, 

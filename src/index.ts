@@ -22,7 +22,7 @@ async function main() {
     const config = LFConfig.fromJSONString(fs.readFileSync(MFT_FILE).toString())
 
     let patches: Patches = null;
-    if (!fs.existsSync(CFG_FILE)) {
+    if (fs.existsSync(CFG_FILE)) {
         patches = Patches.fromJSONStringCommented(fs.readFileSync(CFG_FILE).toString())
     }
 
@@ -39,7 +39,7 @@ async function main() {
         fs.mkdirSync(dlPathFull);
     }
 
-    dlmgr.downloadMods(dlPathFull)
+    await dlmgr.downloadMods(dlPathFull)
 }
 
 main()

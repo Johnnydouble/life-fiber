@@ -46,7 +46,7 @@ class LFConfig {
     }
 }
 
-
+//todo: move away from JSON.stringify (its unreliable)
 class ObjectSet<T> {
     map: Map<string, T>
 
@@ -132,6 +132,14 @@ class ObjectSetNC<T extends NumberCrushable> {
 
     delete(value: T) : boolean {
         return this.map.delete(value.crush())
+    }
+
+    values() : IterableIterator<T> {
+        return this.map.values()
+    }
+    
+    [Symbol.iterator]() {
+        return this.values()
     }
 }
 
